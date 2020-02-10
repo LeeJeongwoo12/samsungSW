@@ -1,0 +1,105 @@
+#include <iostream>
+
+using namespace std;
+
+int arr[51][51];
+
+int findMin(int colS, int colE, int rowS, int rowE);
+
+int main(int argc, char** argv)
+{
+	int test_case;
+	int T;
+	cin >> T;
+	for (test_case = 1; test_case <= T; ++test_case)
+	{
+		int n, m;
+
+		cin >> n >> m;
+
+		for (int i = 1; i <= n; i++) {
+			for (int j = 1; j <= m; j++)
+				cin >> arr[i][j];
+		}
+
+		printf("#%d %d\n", test_case, findMin(1, n, 1, m));
+	}
+	return 0;
+}
+
+int findMin(int colS, int colE, int rowS, int rowE) {
+	if (colS >= colE && rowS >= rowE)
+		return 0;
+
+	int sum, max = -1;
+	int check = -1;
+
+	if (colS != colE) {
+		// 젤 윗줄 합
+		sum = 0;
+		for (int i = rowS; i <= rowE; i++) {
+			sum += arr[colS][i];
+		}
+		
+		if (max < sum) {
+			max = sum;
+			check = 0;
+		}
+
+		// 젤 밑줄 합
+		sum = 0;
+		for (int i = rowS; i <= rowE; i++) {
+			sum += arr[colE - 1][i];
+		}
+
+		if (max < sum) {
+			max = sum;
+			check = 1;
+		}
+	}
+
+	if (rowS != rowE) {
+		// 젤 앞줄 합
+		sum = 0;
+		for (int i = colS; i <= colE; i++) {
+			sum += arr[i][rowS];
+		}
+
+		if (max < sum) {
+			max = sum;
+			check = 2;
+		}
+
+		// 젤 뒷줄 합
+
+		sum = 0;
+		for (int i = colS; i <= colE; i++) {
+			sum += arr[i][rowE - 1];
+		}
+
+		if (max < sum) {
+			max = sum;
+			check = 3;
+		}
+	}
+
+	sum = 0;
+	for (int i = colS; i <= colE; i++) {
+		for (int j = rowS; j <= rowE; j++) {
+			sum += arr[i][j];
+		}
+	}
+
+	switch (check) {
+	case 0: // 젤 윗줄
+		return sum + findMin(colS, colS, rowS, rowE) + findMin(colS + 1, colE, rowS, rowE);
+	case 1: // 젤 밑줄
+		return sum + findMin(colE, colE, rowS, rowE) + findMin(colS, colE - 1, rowS, rowE);
+	case 2: // 젤 앞줄
+		return sum + findMin(colS, colE, rowS, rowS) + findMin(colS, colE, rowS + 1, rowE);
+	case 3: // 젤 뒷줄
+		return sum + findMin(colS, colE, rowE, rowE) + findMin(colS, colE, rowS, rowE - 1);
+	case -1:
+		return 0;
+	}
+}
